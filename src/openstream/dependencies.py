@@ -4,6 +4,8 @@ import shutil
 import subprocess
 from dataclasses import dataclass
 
+from .ui import progress, section, step, success, warning
+
 
 @dataclass(frozen=True)
 class Dependency:
@@ -49,17 +51,18 @@ def package_list(deps: list[Dependency]) -> list[str]:
 
 
 def print_dependency_summary() -> list[Dependency]:
+    section("Checking runtime dependencies")
     missing = missing_required()
     installed = len(REQUIRED_DEPENDENCIES) - len(missing)
-    print("OpenStream dependency check:")
-    print(f"Required dependencies: {len(REQUIRED_DEPENDENCIES)}")
-    print(f"Installed: {installed}/{len(REQUIRED_DEPENDENCIES)}")
+    progress("Required commands found", installed, len(REQUIRED_DEPENDENCIES))
+    print(f"  Required dependencies: {len(REQUIRED_DEPENDENCIES)}")
+    print(f"  Installed: {installed}/{len(REQUIRED_DEPENDENCIES)}")
     if missing:
-        print("Missing:")
+        warning("Some required dependencies are missing:")
         for dep in missing:
-            print(f"  - {dep.command:<10} package: {dep.package}")
+            print(f"    - {dep.command:<10} package: {dep.package}")
     else:
-        print("Missing: none")
+        success("All required dependencies are already installed.")
     return missing
 
 
@@ -69,8 +72,12 @@ def apt_install_missing(deps: list[Dependency]) -> None:
         return
     if shutil.which("apt") is None:
         raise RuntimeError("apt was not found. Install missing packages manually.")
+    section("Installing missing packages with apt")
+    step("Updating package metadata...")
     subprocess.run(["apt", "update"], check=True)
+    step("Installing: " + " ".join(packages))
     subprocess.run(["apt", "install", "-y", *packages], check=True)
+    success("Missing packages installed successfully.")
 
 
 def ensure_dependencies_interactive(auto_install: bool = False, assume_no: bool = False) -> None:
@@ -92,8 +99,8 @@ def ensure_dependencies_interactive(auto_install: bool = False, assume_no: bool 
 
     print()
     print("Choose what to do:")
-    print("[1] Install missing dependencies now using apt")
-    print("[2] Abort installation so I can install them manually")
+    print("  [1] Install missing dependencies now using apt")
+    print("  [2] Abort installation so you can install them manually")
     selection = input("Selection: ").strip()
     if selection == "1":
         apt_install_missing(missing)

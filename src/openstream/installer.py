@@ -13,6 +13,7 @@ from .config import (
     BIN_PATH,
     CACHE_DIR,
     CONFIG_DIR,
+    CONFIG_PATH,
     CURRENT_OVPN,
     DEFAULT_SOCKS_PORT,
     LAN_LISTEN_IP,
@@ -37,6 +38,7 @@ from .config import (
 )
 from .dependencies import ensure_dependencies_interactive
 from .systemd import daemon_reload, install_runtime_templates
+from .ui import clear_screen, header, key_value, print_command_reference, section, step, success, warning
 
 
 class InstallerError(RuntimeError):
@@ -76,22 +78,25 @@ def detect_target_user(explicit: str | None = None) -> tuple[str, Path]:
 
 
 def prompt_port(default: int = DEFAULT_SOCKS_PORT) -> int:
-    print("Choose the SOCKS5 port OpenStream should expose on this machine.")
-    print(f"Default: {default}")
+    section("Choose your SOCKS5 port")
+    print("OpenStream will expose a SOCKS5 proxy on the port you choose here.")
+    print(f"Default port: {default}")
     while True:
-        raw = input("Port: ").strip()
+        raw = input(f"SOCKS5 port [{default}]: ").strip()
         if not raw:
+            success(f"Using default SOCKS5 port: {default}")
             return default
         try:
             port = validate_port(raw)
         except ValueError as exc:
-            print(f"Invalid port: {exc}")
+            warning(f"Invalid port: {exc}")
             continue
         if port < 1024:
-            print("WARNING: ports below 1024 may require extra privileges and can be annoying.")
+            warning("Ports below 1024 are privileged and may be annoying on normal desktop systems.")
             confirm = input("Use this port anyway? [y/N]: ").strip().lower()
             if confirm != "y":
                 continue
+        success(f"SOCKS5 port selected: {port}")
         return port
 
 
@@ -190,34 +195,70 @@ def initialize_state_files(cfg: OpenStreamConfig) -> None:
 
 def install(args: argparse.Namespace) -> int:
     require_root()
+    header(
+        f"Welcome to OpenStream Installer v{VERSION}",
+        "Thanks for choosing OpenStream. The installer will ask a few short questions and then set up the local OpenVPN-over-SOCKS runtime for you.",
+    )
+
     source_root = Path(args.source_root).resolve()
+    section("Preparing installation context")
+    step(f"Source tree: {source_root}")
     target_user, target_home = detect_target_user(args.target_user)
+    success(f"Detected desktop user: {target_user}")
     drop_dir = Path(args.drop_dir).expanduser() if args.drop_dir else target_home / "Desktop" / "opst"
+    step(f"OpenVPN drop folder will be: {drop_dir}")
+
     port = validate_port(args.port) if args.port else prompt_port()
 
     if not args.skip_dependency_check:
         ensure_dependencies_interactive(auto_install=args.yes, assume_no=args.no)
 
     cfg = OpenStreamConfig(port=port, drop_dir=drop_dir)
+
+    section("Installing OpenStream files")
+    step("Creating configuration, runtime, cache, and profile directories...")
     ensure_directories(cfg, target_user=target_user)
+    success("Directories are ready.")
+
+    step("Writing OpenStream configuration...")
     write_config(cfg)
     initialize_state_files(cfg)
-    write_netns_resolv_conf()
-    copy_python_package(source_root)
-    write_cli_wrapper()
-    install_runtime_templates(cfg)
-    daemon_reload()
+    success("Configuration files written.")
 
+    step("Preparing DNS configuration for the network namespace...")
+    write_netns_resolv_conf()
+    success("Namespace DNS configuration is ready.")
+
+    step("Installing Python control package...")
+    copy_python_package(source_root)
+    success("Python package installed.")
+
+    step("Installing the public 'opst' command...")
+    write_cli_wrapper()
+    success("Command wrapper installed at /usr/local/bin/opst.")
+
+    step("Rendering helper scripts and systemd services...")
+    install_runtime_templates(cfg)
+    success("Runtime helper scripts and services installed.")
+
+    step("Reloading systemd...")
+    daemon_reload()
+    success("systemd is aware of the new OpenStream services.")
+
+    clear_screen()
+    header(f"OpenStream v{VERSION} installed successfully", "Your host route is unchanged. Apps only use the VPN when you point them at the SOCKS5 endpoint.")
+    key_value("SOCKS5 endpoint", cfg.local_endpoint)
+    key_value("LAN endpoint", cfg.lan_endpoint + "  (only with: opst on --lan)")
+    key_value("Drop folder", str(cfg.drop_dir))
+    key_value("Config", str(CONFIG_PATH))
     print()
-    print(f"OpenStream v{VERSION} installed successfully.")
-    print("Drop your .ovpn files into:")
+    print("Put your .ovpn files into:")
     print(f"  {cfg.drop_dir}")
     print()
-    print("Then run:")
+    print("Then start OpenStream with:")
     print("  opst on")
     print()
-    print("Local SOCKS5 endpoint will be:")
-    print(f"  {cfg.local_endpoint}")
+    print_command_reference()
     return 0
 
 
@@ -231,21 +272,31 @@ def _safe_rmtree(path: Path) -> None:
 
 def uninstall(_args: argparse.Namespace | None = None) -> int:
     require_root()
+    header(f"OpenStream Uninstaller v{VERSION}", "Stopping services and removing installed OpenStream runtime files.")
+    section("Stopping services")
     run(["systemctl", "stop", "opst-localproxy.service", "opst-socks.service", "opst-openvpn.service", "opst-setup.service"], check=False)
+    success("Services stopped if they were running.")
+
+    step("Disabling systemd services...")
     run(["systemctl", "disable", *SERVICE_NAMES], check=False)
 
     cleanup_script = LIBEXEC_DIR / "opst-netns.sh"
     if cleanup_script.exists():
+        step("Cleaning up network namespace and firewall rules...")
         run([str(cleanup_script), "down"], check=False)
 
+    section("Removing installed files")
     for service in SERVICE_NAMES:
         (SYSTEMD_DIR / service).unlink(missing_ok=True)
     run(["systemctl", "daemon-reload"], check=False)
+    success("systemd units removed.")
 
     if shutil.which("ip"):
+        step("Removing leftover network namespace and veth interface if they exist...")
         run(["sh", "-c", "ip netns pids opstns 2>/dev/null | xargs -r kill || true"], check=False)
-        run(["ip", "netns", "del", "opstns"], check=False)
-        run(["ip", "link", "del", "veth-opst-host"], check=False)
+        run(["sh", "-c", "ip netns list | awk '{print $1}' | grep -qx opstns && ip netns del opstns || true"], check=False)
+        run(["sh", "-c", "ip link show veth-opst-host >/dev/null 2>&1 && ip link del veth-opst-host || true"], check=False)
+        success("Network cleanup completed.")
 
     _safe_rmtree(LIBEXEC_DIR)
     BIN_PATH.unlink(missing_ok=True)
@@ -256,8 +307,10 @@ def uninstall(_args: argparse.Namespace | None = None) -> int:
     _safe_rmtree(CACHE_DIR)
     _safe_rmtree(RUN_DIR)
 
-    print("OpenStream uninstalled.")
+    clear_screen()
+    header("OpenStream was uninstalled", "System runtime files were removed. Your original .ovpn drop folder was intentionally left alone.")
     print("Your original .ovpn drop folder was not deleted.")
+    print("Delete it manually only if you no longer need those VPN files.")
     return 0
 
 

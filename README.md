@@ -1,12 +1,14 @@
-# OpenStream (`opst`)
+# 🔒 OpenStream (`opst`)
 
-OpenStream is a small Linux tool that runs OpenVPN inside an isolated network namespace and exposes the VPN connection as a SOCKS5 proxy.
+> OpenStream is a small Linux tool that runs OpenVPN inside an isolated network namespace and exposes the VPN connection as a SOCKS5 proxy.
 
 The point is simple: your host keeps its normal internet route. Only applications configured to use the SOCKS5 endpoint go through the VPN.
 
-Language: English | [برای خوندن راهنمای فارسی اینجارو کلیک کنید](README-fa.md)
+🌍 **Language:** English | [برای خوندن راهنمای فارسی اینجارو کلیک کنید](README-fa.md)
 
-## What it does
+---
+
+## ✨ What it does
 
 OpenStream creates a dedicated Linux network namespace named `opstns`, starts OpenVPN inside it, starts `microsocks` inside the same namespace, then forwards a local or LAN-facing TCP listener to that namespace SOCKS server using `socat`.
 
@@ -18,13 +20,17 @@ socks5h://127.0.0.1:2086
 
 The port is not fixed. The installer asks you which SOCKS5 port to use and saves it in `/etc/opst/config.toml`.
 
-## What it does not do
+---
+
+## 🚫 What it does not do
 
 OpenStream is not a VPN provider, does not ship VPN credentials, does not hide all traffic automatically, and does not modify the default route of your host. Apps must explicitly use the SOCKS5 proxy.
 
 It is currently aimed at Debian/Ubuntu-style Linux systems using `systemd`, `iproute2`, `iptables`, OpenVPN, `microsocks`, and `socat`.
 
-## Install
+---
+
+## 📦 Install
 
 Run the following commands in order: (Naturally, for the initial installation from GitHub and for installing the required packages, unrestricted internet access is needed the first time.)
 
@@ -53,7 +59,9 @@ Typical packages:
 sudo apt install openvpn iproute2 iptables socat microsocks curl systemd
 ```
 
-## Add OpenVPN profiles
+---
+
+## 📁 Add OpenVPN profiles
 
 Put one or more `.ovpn` files here:
 
@@ -78,7 +86,9 @@ hybrid username/password + certificate
 static key / tls-auth / tls-crypt
 ```
 
-## Start local mode
+---
+
+## 🖥️ Start local mode
 
 ```sh
 opst on
@@ -98,7 +108,9 @@ curl --proxy socks5h://127.0.0.1:2086 https://ifconfig.me
 
 Use the port you selected during install.
 
-## Start LAN mode
+---
+
+## 🌐 Start LAN mode
 
 ```sh
 opst on --lan
@@ -117,11 +129,16 @@ WARNING: LAN mode exposes SOCKS5 on 0.0.0.0:2086
 Only use this on trusted networks.
 ```
 
+> [!WARNING]
+> Do not enable LAN mode on public networks, dormitories, cafés, airports, or any network you do not trust.
+
 Now, by simply keeping OpenStream running on your laptop or desktop, you can create a SOCKS5 proxy inside Telegram on your phone using your computer’s IP address and your chosen port, then connect Telegram through it. (The same thing can also be done with apps like V2rayNG on Android (or other apps on IOS) if you want your entire phone to access the internet through the proxy.)
 
 Do not enable LAN mode on public networks, dormitories, cafés, airports, or any network you do not trust. In practice, this mode exposes a gateway into your VPN profile and should not be left open carelessly.
 
-## Commands
+---
+
+## 🛠 Commands
 
 ```sh
 opst on
@@ -141,7 +158,9 @@ opst logs openvpn
 sudo opst uninstall
 ```
 
-## Test
+---
+
+## ✅ Test
 
 ```sh
 opst test
@@ -153,7 +172,9 @@ This runs:
 curl --proxy socks5h://127.0.0.1:<configured-port> https://ifconfig.me
 ```
 
-## Logs
+---
+
+## 📜 Logs
 
 ```sh
 opst logs
@@ -163,7 +184,9 @@ opst logs socks
 opst logs localproxy
 ```
 
-## Uninstall
+---
+
+## 🧹 Uninstall
 
 ```sh
 sudo opst uninstall
@@ -177,20 +200,30 @@ sudo ./uninstall.sh
 
 The uninstaller removes system files, systemd units, runtime state, cached profiles, and namespaces. It does not delete your original `.ovpn` drop folder by default.
 
-## Support / Donate
+---
+
+## ❤️ Support / Donate
 
 If OpenStream saves you time, crypto donations are welcome!
 
 ```text
 Bitcoin (BTC): bc1ql05zalkxftmrxwp2d6y9u97e3ypg6n8yfzpp2g
-Ethereum / ERC-20 / (Ethereum mainnet, Binance Smart Chain, Arbitrum, Optimism, Base, Polygon, and other ERC-20/L2 networks): 0x920986fee228a8d62b58a9a25fece7aafb469e70
+
+Ethereum / ERC-20 / (Ethereum mainnet, Binance Smart Chain, Arbitrum, Optimism, Base, Polygon, and other ERC-20/L2 networks):
+0x920986fee228a8d62b58a9a25fece7aafb469e70
+
 Solana (SOL / SPL): D6sFh8xjgnfLe2p3w55m68ERwt8gaMYDcNZaqfhUrvQ8
+
 Litecoin (LTC): ltc1qzl3lyaz83xnnurr2rwge5smgg8e3nma5fwk632
+
 Zcash (ZEC): t1QX9A83h4GxnZsXbqWbx8SCbprkwductoA
+
 Ton (TON): UQBoXYOLS8sn4YBO0ojc042uhGnHyyFuuwJPI7ArBZjOhoq9
 ```
 
-## Security notes
+---
+
+## 🔐 Security notes
 
 Never commit real `.ovpn` files if they include private keys, certificates, provider hostnames, usernames, or passwords. Do not commit `/etc/openvpn/opst/auth/*.txt` under any circumstances.
 
@@ -201,4 +234,3 @@ OpenStream writes profile-specific auth files to:
 ```
 
 with `root:root` ownership and `0600` permissions.
-

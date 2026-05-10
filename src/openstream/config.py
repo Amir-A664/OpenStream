@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path
 from typing import Any
 
@@ -171,6 +171,10 @@ def write_config(cfg: OpenStreamConfig, path: Path = CONFIG_PATH) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(config_to_toml(cfg), encoding="utf-8")
     path.chmod(0o644)
+
+
+def with_port(cfg: OpenStreamConfig, port: int) -> OpenStreamConfig:
+    return replace(cfg, port=validate_port(port))
 
 
 def _parse_simple_toml(text: str) -> dict[str, dict[str, Any]]:

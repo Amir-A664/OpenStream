@@ -12,6 +12,7 @@ from typing import Any
 from .auth import auth_label, auth_requires_credentials, choose_auth_method, ensure_auth_file
 from .config import OpenStreamConfig
 from .ovpn_patch import patch_ovpn_config
+from .ui import key_value, section, step, success, warning
 
 
 @dataclass
@@ -184,12 +185,18 @@ def print_profiles(cfg: OpenStreamConfig, profiles: list[Profile] | None = None)
     profiles = profiles or load_registry(cfg)
     current = current_profile_id(cfg, profiles)
     if not profiles:
-        print("No OpenStream profiles are registered.")
-        print(f"Put your .ovpn config files here:\n{cfg.drop_dir}")
+        warning("No OpenStream profiles are registered yet.")
+        print("Put your .ovpn config files here:")
+        print(f"  {cfg.drop_dir}")
+        print("Then run:")
+        print("  opst add")
         return
+    print("Cached profiles:")
     for i, profile in enumerate(profiles, 1):
-        is_current = "yes" if profile.id == current else "no"
-        print(f"[{i}] {profile.name:<28} auth: {profile.label:<42} current: {is_current}")
+        marker = "current" if profile.id == current else "available"
+        print(f"  [{i}] {profile.name}")
+        key_value("auth", profile.label)
+        key_value("state", marker)
 
 
 def select_profile_interactive(cfg: OpenStreamConfig, profiles: list[Profile]) -> Profile:
@@ -200,14 +207,13 @@ def select_profile_interactive(cfg: OpenStreamConfig, profiles: list[Profile]) -
         )
     if len(profiles) == 1:
         profile = profiles[0]
-        print(f"Using profile: {profile.name} ({profile.label})")
+        success(f"Using the only available profile: {profile.name} ({profile.label})")
         return profile
 
-    print("OpenStream profiles:")
-    print()
+    section("Select profile")
     for i, profile in enumerate(profiles, 1):
-        print(f"[{i}] {profile.name:<28} auth: {profile.label}")
-    print(f"[{len(profiles) + 1}] Add new .ovpn file")
+        print(f"  [{i}] {profile.name:<28} auth: {profile.label}")
+    print(f"  [{len(profiles) + 1}] Add new .ovpn file")
     selection = input("Select profile: ").strip()
     if not selection.isdigit():
         raise RuntimeError("Invalid profile selection.")

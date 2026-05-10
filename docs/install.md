@@ -83,6 +83,23 @@ The local endpoint is:
 socks5h://127.0.0.1:<configured-port>
 ```
 
+
+## Change the SOCKS5 port after install
+
+You do not need to uninstall and reinstall OpenStream just to change the SOCKS5 port. Run:
+
+```sh
+sudo opst changeport
+```
+
+or set the port directly:
+
+```sh
+sudo opst changeport 2099
+```
+
+OpenStream updates `/etc/opst/config.toml`, re-renders the helper scripts and systemd units, reloads systemd, and restarts the service chain if it was already running.
+
 ## LAN mode
 
 ```sh

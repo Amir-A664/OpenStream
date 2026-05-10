@@ -6,6 +6,7 @@ Start with OpenStream's own status commands:
 opst status
 opst current
 opst test
+opst changeport
 opst logs
 ```
 
