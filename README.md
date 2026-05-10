@@ -4,9 +4,7 @@ OpenStream is a small Linux tool that runs OpenVPN inside an isolated network na
 
 The point is simple: your host keeps its normal internet route. Only applications configured to use the SOCKS5 endpoint go through the VPN.
 
-Repository: <https://github.com/Amir-A664/OpenStream/>
-
-Language: English | [فارسی](README-fa.md)
+Language: English | [برای خوندن راهنمای فارسی اینجارو کلیک کنید](README-fa.md)
 
 ## What it does
 
