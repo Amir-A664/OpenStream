@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg-info/
+.eggs/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+build/
+dist/
+.venv/
+venv/
+
+# Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Runtime/staging
+.openstream-stage/
+stage/
+tmp/
+*.log
+
+# OpenVPN secrets and private configs
+*.ovpn
+*.ovpn.local
+auth.txt
+*.auth
+*.key
+*.crt
+*.pem
+*.p12
+*.pfx
+
+# But keep future public examples/tests trackable
+!examples/**/*.ovpn
+!examples/**/*.crt
+!examples/**/*.key
+!tests/fixtures/**/*.ovpn
+!tests/fixtures/**/*.crt
+!tests/fixtures/**/*.key
+
+# Archives
+*.zip
+*.tar
+*.tar.gz

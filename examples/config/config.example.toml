@@ -1,0 +1,33 @@
+# OpenStream example config.
+# The installer writes the real file to /etc/opst/config.toml.
+
+[project]
+name = "OpenStream"
+cli = "opst"
+repository = "https://github.com/Amir-A664/OpenStream/"
+
+[network]
+namespace = "opstns"
+host_if = "veth-opst-host"
+ns_if = "veth-opst-ns"
+host_ip_cidr = "10.200.1.1/30"
+ns_ip_cidr = "10.200.1.2/30"
+ns_host_ip = "10.200.1.1"
+ns_bind_ip = "10.200.1.2"
+tun_dev = "tun-opst"
+
+[proxy]
+port = 2086
+local_listen_ip = "127.0.0.1"
+lan_listen_ip = "0.0.0.0"
+
+[paths]
+drop_dir = "/home/YOUR_USER/Desktop/opst"
+profiles_dir = "/var/lib/opst/profiles"
+auth_dir = "/etc/openvpn/opst/auth"
+current_ovpn = "/etc/openvpn/opst/current.ovpn"
+listen_ip = "/etc/opst/listen_ip"
+registry = "/etc/opst/profiles.json"
+state_dir = "/var/lib/opst/state"
+runtime_dir = "/var/lib/opst/runtime"
+libexec_dir = "/usr/local/lib/opst"
