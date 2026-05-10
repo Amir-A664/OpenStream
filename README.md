@@ -2,6 +2,16 @@
 
 > OpenStream is a small Linux tool that runs OpenVPN inside an isolated network namespace and exposes the VPN connection as a SOCKS5 proxy.
 
+[![Latest release](https://img.shields.io/github/v/release/Amir-A664/OpenStream?display_name=tag&logo=github&label=release&color=blue&cacheSeconds=300)](https://github.com/Amir-A664/OpenStream/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/Amir-A664/OpenStream/total.svg?label=downloads&logo=github&cacheSeconds=300)](https://github.com/Amir-A664/OpenStream/releases)
+[![License](https://img.shields.io/github/license/Amir-A664/OpenStream?color=blue)](LICENSE)
+[![Stars](https://img.shields.io/github/stars/Amir-A664/OpenStream?style=flat&logo=github)](https://github.com/Amir-A664/OpenStream/stargazers)
+[![Issues](https://img.shields.io/github/issues/Amir-A664/OpenStream?logo=github)](https://github.com/Amir-A664/OpenStream/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/Amir-A664/OpenStream?logo=github)](https://github.com/Amir-A664/OpenStream/pulls)
+[![Platform](https://img.shields.io/badge/platform-Linux-blue?logo=linux)](#)
+[![OpenVPN](https://img.shields.io/badge/OpenVPN-supported-brightgreen)](#)
+[![SOCKS5](https://img.shields.io/badge/SOCKS5-local%20%7C%20LAN-purple)](#)
+
 The point is simple: your host keeps its normal internet route. Only applications configured to use the SOCKS5 endpoint go through the VPN.
 
 🌍 **Language:** English | [برای خوندن راهنمای فارسی اینجارو کلیک کنید](README-fa.md)
