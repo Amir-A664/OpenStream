@@ -28,7 +28,7 @@ Default endpoint after install:
 socks5h://127.0.0.1:2086
 ```
 
-The port is not fixed. The installer asks you which SOCKS5 port to use and saves it in `/etc/opst/config.toml`.
+The port is not fixed. The installer asks you which SOCKS5 port to use and saves it in `/etc/opst/config.toml`. You can also change your selected port again after installation with the `opst changeport` command.
 
 ---
 
@@ -116,7 +116,7 @@ Example:
 curl --proxy socks5h://127.0.0.1:2086 https://ifconfig.me
 ```
 
-Use the port you selected during install.
+Use the port you selected during install. You can also change your selected port again after installation with the `opst changeport` command.
 
 ---
 
@@ -157,6 +157,7 @@ opst off
 opst restart
 opst restart --lan
 opst status
+opst changeport
 opst current
 opst use
 opst profiles
