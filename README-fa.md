@@ -24,6 +24,8 @@ socks5h://127.0.0.1:2086
 /etc/opst/config.toml
 ```
 
+همچنین شما می‌توانید پس از نصب با دستور `opst changeport` پورت انتخاب شده‌ خود را مجددا تغییر دهید. 
+
 ---
 
 ## 🚫 اوپن استریم چه چیزی نیست؟
@@ -128,7 +130,7 @@ opst test
 curl --proxy socks5h://127.0.0.1:2086 https://ifconfig.me
 ```
 
-به جای `2086` همان پورتی را بگذارید که هنگام نصب انتخاب شده است.
+به جای `2086` همان پورتی را بگذارید که هنگام نصب انتخاب شده است. همچنین شما می‌توانید پس از نصب با دستور `opst changeport` پورت انتخاب شده‌ خود را مجددا تغییر دهید. 
 
 ---
 
@@ -168,6 +170,7 @@ opst on --lan
 opst off
 opst restart
 opst restart --lan
+opst changeport
 opst status
 opst current
 opst use
