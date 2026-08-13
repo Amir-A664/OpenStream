@@ -4,7 +4,7 @@ import subprocess
 from pathlib import Path
 from string import Template
 
-from .config import OpenStreamConfig, SERVICE_NAMES, SYSTEMD_DIR
+from .config import SERVICE_NAMES, SYSTEMD_DIR, OpenStreamConfig
 
 TEMPLATE_ROOT = Path(__file__).with_name("templates")
 

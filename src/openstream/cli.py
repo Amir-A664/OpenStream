@@ -18,7 +18,8 @@ from .config import (
     write_config,
     write_listen_ip,
 )
-from .installer import prompt_port, uninstall as uninstall_command
+from .installer import prompt_port
+from .installer import uninstall as uninstall_command
 from .profiles import (
     choose_cached_profile,
     current_profile_id,
@@ -29,7 +30,14 @@ from .profiles import (
     select_profile_interactive,
     set_current_profile,
 )
-from .systemd import daemon_reload, install_runtime_templates, service_state, start_all, stop_all, systemctl
+from .systemd import (
+    daemon_reload,
+    install_runtime_templates,
+    service_state,
+    start_all,
+    stop_all,
+    systemctl,
+)
 from .ui import (
     header,
     key_value,

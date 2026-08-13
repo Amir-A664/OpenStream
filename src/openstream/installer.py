@@ -6,6 +6,7 @@ import pwd
 import shutil
 import subprocess
 import sys
+from contextlib import suppress
 from pathlib import Path
 
 from .config import (
@@ -14,9 +15,7 @@ from .config import (
     CACHE_DIR,
     CONFIG_DIR,
     CONFIG_PATH,
-    CURRENT_OVPN,
     DEFAULT_SOCKS_PORT,
-    LAN_LISTEN_IP,
     LIBEXEC_DIR,
     LISTEN_IP_PATH,
     LOCAL_LISTEN_IP,
@@ -31,14 +30,23 @@ from .config import (
     STATE_DIR,
     STATE_ROOT,
     SYSTEMD_DIR,
-    OpenStreamConfig,
     VERSION,
+    OpenStreamConfig,
     validate_port,
     write_config,
 )
 from .dependencies import ensure_dependencies_interactive
 from .systemd import daemon_reload, install_runtime_templates
-from .ui import clear_screen, header, key_value, print_command_reference, section, step, success, warning
+from .ui import (
+    clear_screen,
+    header,
+    key_value,
+    print_command_reference,
+    section,
+    step,
+    success,
+    warning,
+)
 
 
 class InstallerError(RuntimeError):
@@ -56,14 +64,10 @@ def run(cmd: list[str], *, check: bool = True) -> subprocess.CompletedProcess[st
 
 def detect_target_user(explicit: str | None = None) -> tuple[str, Path]:
     candidates = [explicit, os.environ.get("SUDO_USER")]
-    try:
+    with suppress(OSError):
         candidates.append(os.getlogin())
-    except OSError:
-        pass
-    try:
+    with suppress(Exception):
         candidates.append(subprocess.check_output(["logname"], text=True).strip())
-    except Exception:
-        pass
 
     for user in candidates:
         if not user or user == "root":
