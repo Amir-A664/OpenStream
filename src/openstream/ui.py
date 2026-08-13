@@ -5,7 +5,6 @@ import shutil
 import sys
 import textwrap
 from dataclasses import dataclass
-from typing import Iterable
 
 
 def supports_color() -> bool:

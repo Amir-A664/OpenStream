@@ -12,7 +12,7 @@ from typing import Any
 from .auth import auth_label, auth_requires_credentials, choose_auth_method, ensure_auth_file
 from .config import OpenStreamConfig
 from .ovpn_patch import patch_ovpn_config
-from .ui import key_value, section, step, success, warning
+from .ui import key_value, section, success, warning
 
 
 @dataclass
@@ -31,7 +31,7 @@ class Profile:
         return auth_label(self.auth_method)
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "Profile":
+    def from_dict(cls, data: dict[str, Any]) -> Profile:
         return cls(
             id=str(data["id"]),
             name=str(data["name"]),
