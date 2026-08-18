@@ -57,7 +57,7 @@ Do not use one shared `auth.txt` for every server. Providers often give differen
 0.0.0.0:<configured-port>
 ```
 
-In `v1.0.0`, that exposed listener is not a multi-user authenticated proxy. Use LAN mode only on networks you trust.
+In `v1.0.0-alpha`, that exposed listener is not a multi-user authenticated proxy. Use LAN mode only on networks you trust.
 
 ## Namespace isolation is not a sandbox promise
 

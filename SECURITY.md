@@ -6,7 +6,7 @@ OpenStream handles VPN configuration files and, for some profile types, VPN user
 
 | Version | Status |
 | --- | --- |
-| `1.0.0` | Security fixes accepted |
+| `1.0.0-alpha` | Security fixes accepted during alpha testing |
 
 ## What not to publish
 

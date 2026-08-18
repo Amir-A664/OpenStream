@@ -34,7 +34,7 @@ def test_installer_completion_summary_reaches_config_path(monkeypatch, tmp_path:
     assert installer.install(args) == 0
 
     out = capsys.readouterr().out
-    assert "OpenStream v1.0.0 installed successfully" in out
+    assert "OpenStream v1.0.0-alpha installed successfully" in out
     assert "SOCKS5 endpoint" in out
     assert "socks5h://127.0.0.1:2092" in out
     assert "Config:" in out

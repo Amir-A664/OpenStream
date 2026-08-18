@@ -57,4 +57,4 @@ Use `socks5h`, not plain `socks5`, when you want DNS resolution to happen throug
 
 LAN mode is not an authenticated proxy layer. Treat it like opening a local network service. Use it on your home/trusted LAN, not a dorm, cafe, airport, public Wi-Fi, or hostile network.
 
-For the current build there is no custom bind-address argument and no SOCKS username/password on the exposed LAN listener. That is intentional for `v1.0.0`: simpler surface, fewer fake promises.
+For the current build there is no custom bind-address argument and no SOCKS username/password on the exposed LAN listener. That is intentional for `v1.0.0-alpha`: simpler surface, fewer fake promises.

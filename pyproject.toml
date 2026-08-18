@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "openstream"
-version = "1.0.0"
+version = "1.0.0a0"
 description = "Local and LAN SOCKS5 proxy over OpenVPN without routing the whole host through VPN"
 readme = "README.md"
 requires-python = ">=3.10"
@@ -14,7 +14,7 @@ authors = [
 ]
 keywords = ["openvpn", "socks5", "network-namespace", "systemd", "linux"]
 classifiers = [
-  "Development Status :: 5 - Production/Stable",
+  "Development Status :: 3 - Alpha",
   "Environment :: Console",
   "Intended Audience :: End Users/Desktop",
   "License :: OSI Approved :: MIT License",

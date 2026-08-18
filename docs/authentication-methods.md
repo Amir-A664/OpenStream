@@ -82,7 +82,7 @@ OpenStream preserves those directives. It does not ask for username/password unl
 
 ## Not supported in this build
 
-These are future work and should not be promised for `v1.0.0`:
+These are future work and should not be promised for `v1.0.0-alpha`:
 
 ```text
 PAM backend
