@@ -74,7 +74,7 @@ def test_status_displays_version(monkeypatch, tmp_path, capsys) -> None:
 
     out = capsys.readouterr().out
     assert "OpenStream status" in out
-    assert "Version: v1.0.0" in out
+    assert "Version: v1.0.0-alpha" in out
     assert "Listen: 127.0.0.1:2086" in out
 
 
@@ -85,7 +85,7 @@ def test_parser_version_flag(capsys) -> None:
     except SystemExit as exc:
         assert exc.code == 0
 
-    assert "OpenStream v1.0.0" in capsys.readouterr().out
+    assert "OpenStream v1.0.0-alpha" in capsys.readouterr().out
 
 
 def test_empty_opst_prints_command_reference(capsys) -> None:

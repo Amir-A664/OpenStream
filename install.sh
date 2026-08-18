@@ -7,7 +7,7 @@ if [[ "${EUID}" -ne 0 ]]; then
   exit 1
 fi
 
-REPO_TARBALL_URL="${OPENSTREAM_TARBALL_URL:-https://github.com/Amir-A664/OpenStream/archive/refs/tags/v1.0.0.tar.gz}"
+REPO_TARBALL_URL="${OPENSTREAM_TARBALL_URL:-https://github.com/Amir-A664/OpenStream/archive/refs/tags/v1.0.0-alpha.tar.gz}"
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd 2>/dev/null || pwd)"
 SOURCE_ROOT="${SCRIPT_DIR}"
 TMP_DIR=""

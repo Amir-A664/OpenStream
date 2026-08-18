@@ -2,11 +2,11 @@
 
 All notable changes to OpenStream will be documented here.
 
-This project follows semantic versioning starting with the first public stable release.
+This project follows semantic versioning. The current public version is a prerelease; the first stable release has not been published yet.
 
-## [1.0.0] - 2026-05-10
+## [1.0.0-alpha] - 2026-05-10
 
-Initial public stable release.
+Initial public alpha release.
 
 Added:
 
@@ -49,9 +49,9 @@ Changed:
 - Replaced old prototype assumptions such as fixed server names and personal paths with a general profile registry.
 - Changed CLI privilege escalation to re-enter through the installed `/usr/local/bin/opst` wrapper instead of trying to execute the Python module file directly.
 - Tightened `.gitignore` so real `.ovpn` files are ignored by default while public examples and test fixtures remain trackable.
-- Updated repository metadata from early development wording to `v1.0.0` release wording.
+- Updated repository metadata from early development wording to `v1.0.0-alpha` release wording.
 
-Fixed before release:
+Fixed during alpha development:
 
 - Fixed installer completion-summary crash caused by using `CONFIG_PATH` without importing it in `installer.py`.
 - Added regression coverage for the full installer success summary so the completion screen is tested.

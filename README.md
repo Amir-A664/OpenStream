@@ -14,6 +14,9 @@
 
 The point is simple: your host keeps its normal internet route. Only applications configured to use the SOCKS5 endpoint go through the VPN.
 
+> [!IMPORTANT]
+> **Release status: Alpha.** The current published release is `v1.0.0-alpha`, represented as `1.0.0a0` in Python package metadata. It is not yet a production/stable release. Before publishing `v1.0.0`, complete the [stable-release checklist](docs/stable-release-checklist.md).
+
 🌍 **Language:** English | [برای خوندن راهنمای فارسی اینجارو کلیک کنید](README-fa.md)
 
 ---
@@ -87,7 +90,7 @@ opst on
 
 OpenStream scans that folder, copies profiles into `/var/lib/opst/profiles/`, detects the authentication method, asks for credentials only when needed, patches the `.ovpn` safely for OpenVPN 2.6.x compatibility, and lets you choose the active profile.
 
-Supported profile types in v1.0.0:
+Supported profile types in `v1.0.0-alpha`:
 
 ```text
 username/password

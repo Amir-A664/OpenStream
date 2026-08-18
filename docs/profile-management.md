@@ -2,7 +2,7 @@
 
 OpenStream treats every `.ovpn` file as a profile. It is designed for normal provider configs, not just one hardcoded server name.
 
-Supported profile shapes in `v1.0.0`:
+Supported profile shapes in `v1.0.0-alpha`:
 
 ```text
 username/password only

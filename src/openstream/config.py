@@ -7,7 +7,7 @@ from typing import Any
 APP_NAME = "opst"
 PROJECT_NAME = "OpenStream"
 REPOSITORY_URL = "https://github.com/Amir-A664/OpenStream/"
-VERSION = "1.0.0"
+VERSION = "1.0.0-alpha"
 
 NS_NAME = "opstns"
 HOST_IF = "veth-opst-host"
