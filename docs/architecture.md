@@ -71,6 +71,7 @@ Runtime files are written here:
 ```text
 /etc/opst/config.toml
 /etc/opst/listen_ip
+/etc/opst/latch
 /etc/opst/profiles.json
 /etc/openvpn/opst/current.ovpn
 /etc/openvpn/opst/auth/<profile-id>.txt
@@ -80,6 +81,8 @@ Runtime files are written here:
 /usr/local/lib/opst/
 /etc/systemd/system/opst-*.service
 ```
+
+`/etc/opst/latch` is a flag file: its presence means latch mode is active. It is created by `opst on --latch` and removed by `opst off`. See [latch-mode.md](latch-mode.md) for details.
 
 User-provided `.ovpn` files are not edited in place. They stay in the drop folder:
 

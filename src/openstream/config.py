@@ -26,6 +26,7 @@ DATA_CIPHERS_FALLBACK = "AES-128-CBC"
 CONFIG_DIR = Path("/etc/opst")
 CONFIG_PATH = CONFIG_DIR / "config.toml"
 LISTEN_IP_PATH = CONFIG_DIR / "listen_ip"
+LATCH_PATH = CONFIG_DIR / "latch"
 PROFILE_REGISTRY_PATH = CONFIG_DIR / "profiles.json"
 
 OPENVPN_DIR = Path("/etc/openvpn/opst")
@@ -85,6 +86,7 @@ class OpenStreamConfig:
     auth_dir: Path = AUTH_DIR
     current_ovpn: Path = CURRENT_OVPN
     listen_ip_path: Path = LISTEN_IP_PATH
+    latch_path: Path = LATCH_PATH
     registry_path: Path = PROFILE_REGISTRY_PATH
     state_dir: Path = STATE_DIR
     runtime_dir: Path = RUNTIME_DIR
@@ -262,3 +264,17 @@ def write_listen_ip(cfg: OpenStreamConfig, lan: bool = False) -> str:
     cfg.listen_ip_path.write_text(value + "\n", encoding="utf-8")
     cfg.listen_ip_path.chmod(0o644)
     return value
+
+
+def read_latch(cfg: OpenStreamConfig) -> bool:
+    return cfg.latch_path.exists()
+
+
+def write_latch(cfg: OpenStreamConfig) -> None:
+    cfg.latch_path.parent.mkdir(parents=True, exist_ok=True)
+    cfg.latch_path.write_text("1\n", encoding="utf-8")
+    cfg.latch_path.chmod(0o644)
+
+
+def clear_latch(cfg: OpenStreamConfig) -> None:
+    cfg.latch_path.unlink(missing_ok=True)
