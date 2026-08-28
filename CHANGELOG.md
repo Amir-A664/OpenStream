@@ -4,6 +4,18 @@ All notable changes to OpenStream will be documented here.
 
 This project follows semantic versioning. The current public version is a prerelease; the first stable release has not been published yet.
 
+## [Unreleased]
+
+Added:
+
+- Latch mode (`opst on --latch` / `opst restart --latch`) for server deployments.
+  - When latch is active, OpenVPN is configured to exit on connection drop instead of internally soft-restarting. Systemd's `Restart=always` + `StartLimitIntervalSec=0` immediately relaunches it from scratch, indefinitely.
+  - Implemented by omitting `persist-tun` and appending `remap-usr1 SIGTERM` in the patched `.ovpn` (written as a separate `patched-latch.ovpn` alongside the normal `patched.ovpn`).
+  - Latch state is persisted as a flag file at `/etc/opst/latch`. `opst off` always clears it.
+  - `opst restart` without `--latch` preserves the latch state that was active when services were started.
+  - `opst use` (profile switch) picks up the active latch state automatically.
+- `docs/latch-mode.md` explaining the latch feature and recommended server setup.
+
 ## [1.0.0-alpha] - 2026-05-10
 
 Initial public alpha release.

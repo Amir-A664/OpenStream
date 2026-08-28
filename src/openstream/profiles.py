@@ -227,11 +227,34 @@ def select_profile_interactive(cfg: OpenStreamConfig, profiles: list[Profile]) -
     return profiles[index - 1]
 
 
-def set_current_profile(cfg: OpenStreamConfig, profile: Profile) -> None:
+def set_current_profile(cfg: OpenStreamConfig, profile: Profile, latch: bool = False) -> None:
     cfg.current_ovpn.parent.mkdir(parents=True, exist_ok=True)
     if cfg.current_ovpn.exists() or cfg.current_ovpn.is_symlink():
         cfg.current_ovpn.unlink()
-    os.symlink(profile.patched_ovpn, cfg.current_ovpn)
+
+    if latch:
+        # Produce a separate patched file with latch-specific OpenVPN directives.
+        profile_dir = Path(profile.patched_ovpn).parent
+        latch_patched = profile_dir / "patched-latch.ovpn"
+        raw = Path(profile.original_ovpn).read_text(encoding="utf-8", errors="surrogateescape")
+        auth_file_path = cfg.auth_dir / f"{profile.id}.txt"
+        auth_file = auth_file_path if auth_file_path.exists() else None
+        external_dir = profile_dir / "external-files"
+
+        patch = patch_ovpn_config(
+            raw,
+            auth_method=profile.auth_method,
+            auth_file=auth_file,
+            profile_source_dir=Path(profile.source_path).parent,
+            external_dir=external_dir,
+            tun_dev=cfg.tun_dev,
+            latch=True,
+        )
+        latch_patched.write_text(patch.text, encoding="utf-8")
+        os.chmod(latch_patched, 0o600)
+        os.symlink(latch_patched, cfg.current_ovpn)
+    else:
+        os.symlink(profile.patched_ovpn, cfg.current_ovpn)
 
 
 def remove_profile(cfg: OpenStreamConfig, profile: Profile) -> None:

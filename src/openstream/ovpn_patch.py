@@ -99,6 +99,7 @@ def patch_ovpn_config(
     profile_source_dir: Path,
     external_dir: Path,
     tun_dev: str = TUN_DEV,
+    latch: bool = False,
 ) -> PatchResult:
     text = normalize_newlines(raw)
     output: list[str] = []
@@ -139,6 +140,10 @@ def patch_ovpn_config(
             continue
 
         if key in SINGLETON_RECONNECT_DIRECTIVES:
+            # In latch mode, suppress persist-tun even if present in the
+            # source config so OpenVPN exits on connection drop.
+            if latch and key == "persist-tun":
+                continue
             if key not in seen_directives:
                 output.append(stripped)
                 seen_directives.add(key)
@@ -171,8 +176,19 @@ def patch_ovpn_config(
         if line.strip() and not line.strip().startswith(("#", ";", "<"))
     }
     for key, directive in SINGLETON_RECONNECT_DIRECTIVES.items():
+        # In latch mode we omit persist-tun so that a connection drop tears down
+        # the tun interface and causes OpenVPN to exit (rather than internally
+        # reconnecting), allowing systemd's Restart=always to restart it cleanly.
+        if latch and key == "persist-tun":
+            continue
         if key not in existing_keys:
             compact.append(directive)
+
+    # In latch mode, remap SIGUSR1 (which OpenVPN sends itself on reconnect
+    # triggers such as ping-restart) to SIGTERM so the process exits and systemd
+    # restarts it from scratch.
+    if latch:
+        compact.append("remap-usr1 SIGTERM")
 
     compact.append(f"data-ciphers {DATA_CIPHERS}")
     compact.append(f"data-ciphers-fallback {DATA_CIPHERS_FALLBACK}")

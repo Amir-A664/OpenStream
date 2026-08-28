@@ -151,14 +151,35 @@ Do not enable LAN mode on public networks, dormitories, cafés, airports, or any
 
 ---
 
+## 🔁 Latch mode (server use)
+
+```sh
+opst on --latch
+```
+
+Latch mode is designed for servers where the SOCKS5 proxy must stay connected indefinitely. When the VPN connection drops, OpenVPN exits immediately instead of soft-restarting internally. Systemd's `Restart=always` then relaunches it from scratch — indefinitely, with no restart cap.
+
+Latch can be combined with LAN mode:
+
+```sh
+opst on --lan --latch
+```
+
+The latch flag persists across restarts until you run `opst off`. See [docs/latch-mode.md](docs/latch-mode.md) for full details.
+
+---
+
 ## 🛠 Commands
 
 ```sh
 opst on
 opst on --lan
+opst on --latch
+opst on --lan --latch
 opst off
 opst restart
 opst restart --lan
+opst restart --latch
 opst status
 opst changeport
 opst current

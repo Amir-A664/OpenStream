@@ -11,11 +11,14 @@ from .config import (
     LAN_LISTEN_IP,
     LOCAL_LISTEN_IP,
     VERSION,
+    clear_latch,
     load_config,
+    read_latch,
     read_listen_ip,
     validate_port,
     with_port,
     write_config,
+    write_latch,
     write_listen_ip,
 )
 from .installer import prompt_port
@@ -84,16 +87,21 @@ def _print_endpoint(cfg, listen_ip: str) -> None:
     key_value("SOCKS5 endpoint", f"socks5h://{listen_ip}:{cfg.port}")
 
 
-def start_flow(lan: bool) -> int:
+def start_flow(lan: bool, latch: bool = False) -> int:
     require_root_or_reexec(sys.argv[1:])
     cfg = load_config()
     header(f"Starting OpenStream v{VERSION}", "Scanning profiles, selecting the active VPN profile, then starting the service chain.")
     write_listen_ip(cfg, lan=lan)
     listen_ip = LAN_LISTEN_IP if lan else LOCAL_LISTEN_IP
+    if latch:
+        write_latch(cfg)
+        step("Latch mode enabled: daemon will forcefully reconnect on VPN drop.")
+    else:
+        clear_latch(cfg)
     section("Profile scan")
     profiles = refresh_profiles(cfg)
     profile = select_profile_interactive(cfg, profiles)
-    set_current_profile(cfg, profile)
+    set_current_profile(cfg, profile, latch=latch)
     success(f"Active profile: {profile.name}")
 
     section("Starting services")
@@ -109,7 +117,9 @@ def start_flow(lan: bool) -> int:
 
 def off_flow(_args: argparse.Namespace) -> int:
     require_root_or_reexec(sys.argv[1:])
+    cfg = load_config()
     header(f"Stopping OpenStream v{VERSION}")
+    clear_latch(cfg)
     stop_all()
     success("OpenStream stopped.")
     return 0
@@ -121,7 +131,11 @@ def restart_flow(args: argparse.Namespace) -> int:
     step("Stopping current services...")
     stop_all()
     success("Services stopped.")
-    return start_flow(lan=args.lan)
+    latch = getattr(args, "latch", False)
+    if not latch:
+        cfg = load_config()
+        latch = read_latch(cfg)
+    return start_flow(lan=args.lan, latch=latch)
 
 
 def status_flow(_args: argparse.Namespace) -> int:
@@ -185,7 +199,8 @@ def use_flow(_args: argparse.Namespace) -> int:
     cfg = load_config()
     header("Switch OpenStream profile")
     profile = choose_cached_profile(cfg)
-    set_current_profile(cfg, profile)
+    latch = read_latch(cfg)
+    set_current_profile(cfg, profile, latch=latch)
     success(f"Active profile set to: {profile.name}")
     if service_state("opst-openvpn.service") == "active":
         step("OpenStream is running. Restarting VPN-facing services so the new profile is used...")
@@ -302,13 +317,15 @@ def build_parser() -> argparse.ArgumentParser:
 
     on = sub.add_parser("on", help="start OpenStream")
     on.add_argument("--lan", action="store_true", help="bind SOCKS listener to 0.0.0.0")
-    on.set_defaults(func=lambda args: start_flow(args.lan))
+    on.add_argument("--latch", action="store_true", help="forcefully reconnect to VPN if the connection drops (server mode)")
+    on.set_defaults(func=lambda args: start_flow(args.lan, latch=args.latch))
 
     off = sub.add_parser("off", help="stop OpenStream")
     off.set_defaults(func=off_flow)
 
     restart = sub.add_parser("restart", help="restart OpenStream")
     restart.add_argument("--lan", action="store_true", help="restart in LAN mode")
+    restart.add_argument("--latch", action="store_true", help="forcefully reconnect to VPN if the connection drops (server mode)")
     restart.set_defaults(func=restart_flow)
 
     sub.add_parser("status", help="show service status").set_defaults(func=status_flow)
