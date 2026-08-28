@@ -134,9 +134,12 @@ def command_reference() -> str:
 Service control:
   opst on                 start OpenStream in local mode
   opst on --lan           start OpenStream in LAN mode
+  opst on --latch         start with forceful VPN reconnect (server mode)
+  opst on --lan --latch   start in LAN mode with forceful VPN reconnect
   opst off                stop OpenStream
   opst restart            restart OpenStream in local mode
   opst restart --lan      restart OpenStream in LAN mode
+  opst restart --latch    restart with forceful VPN reconnect (server mode)
 
 Profile management:
   opst current            show the active profile
